@@ -1,64 +1,154 @@
-import logo from './logo.svg';
 import './App.css';
+import React, {useEffect, useState} from 'react';
+import { getLocations, isNameValid } from './mock-api/apis';
 
-/*
-
-Items:
-- Try running as-is for initial smoke test
-- Remove all the extra create-react-app boilerplate
-- Design plan, component and method structure
-- Which grid library to use?
-- Build main component logic, connecting the API
-- Styling, set up responsive layout
-
-
-Notes:
-- Going to stay in JS rather than do this in TS since the API handles only very basic types
-- Normally would use TypeScript if the API handled more complex data shapes and sets of properties
-- Going to use Sass for a CSS pre-processor -- unify input labels/fields, buttons, grid labels/rows
-
-
-Notes from instructions:
-
-Name input should be validated using the provided mock API to check whether the chosen name is taken or not.
--- standard red font subtext below Name field
-
-Name input should be validated as the user is typing.
--- every time the field changes, make a new API call
--- for brevity, let this occur, say, once per second
----- apis.js already has a 2-second delay built-in... may or may not need to replicate client-side
-
-Location dropdown options should be fetched using the provided mock API.
--- Name and Location fields, same width
--- Location dropdown is half-width
-
-Component should have a responsive layout
--- Clear button functionality is not specified
--- Assuming for now, based on its proximity to the Add button, that it should clear the grid
-
-Component should be appropriately styled
--- Lower display of Name/Location in a 2:3 ratio
-
-*/
+// Treating "App" as the component since it's the only component, and already contained by index.js
+// Single pages can be much larger than this, but I'd modularize any reusable functionality needed by related pages
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+  const [name, setName] = useState('');
+  const [location, setLocation] = useState('');
+  const [locationOptions, setLocationOptions] = useState([]);
+  const [gridData, setGridData] = useState([]);
+  const [isNameError, setIsNameError] = useState([]);
+
+  useEffect(() => {
+    const fetchResults = async () => {
+      let results = await getLocations();
+      setLocationOptions(results);
+      console.log(`Location options: ${results}`);
+      setLocation(results[0]);
+    };
+    try {
+      fetchResults();
+    }
+    catch (err) {
+      console.error(`Error loading locations via mock API: ${err}`);
+    }
+  }, []);
+
+  const checkIsValidName = async (strName) => {
+    try {
+      let result = await isNameValid(strName);
+      setIsNameError(result ? true : false);
+    }
+    catch (err) {
+      console.error(`Error validating name via mock API: ${err}`);
+    }
+  };
+
+  const handleNameChange = (e) => {
+    setName(e.target.value);
+    if (name) {
+      checkIsValidName(name);
+    } else {
+      setIsNameError(false);
+    }
+  };
+
+  const handleLocationChange = (e) => {
+    setLocation(e.target.value);
+  };
+
+  // Note: Clear button functionality was not specified, so for now it clears everything
+  const handleClearBtnClick = () => {
+    setName('');
+    setLocation(locationOptions[0] || '');
+    setIsNameError(false);
+    setGridData([]);
+  };
+
+  const handleAddBtnClick = (e) => {
+    e.preventDefault();
+    const nameAlreadyExists = gridData.some((gridItem) => gridItem.name === name);
+    if (nameAlreadyExists) {
+        setIsNameError(true);
+    } else if (name && location && !isNameError) {
+        setGridData([...gridData, { name: name, location: location }]);
+        setName('');
+        setLocation(locationOptions[0] || '');
+        setIsNameError(false);
+    }
+  };
+
+  const nameInputField = (
+    <div className="name-container">
+      <label>Name </label>
+      <input type="text" value={name} onChange={handleNameChange} />
     </div>
+  );
+
+  const nameErrorDisplay = (
+    <div className="input-name-error">
+      {isNameError ? 'this name has already been taken' : ''}
+    </div>
+  )
+
+  const locationInputField = (
+    <div className="location-container">
+      <label>Location </label>
+      <select value={location} onChange={handleLocationChange}>
+        {locationOptions.length > 0 ? locationOptions.map((locationOption) => (
+          <option key={locationOption} value={locationOption}>
+            {locationOption}
+          </option>
+        )) : null}
+      </select>
+    </div>
+  );
+
+  const clearBtn = (
+    <div>
+      <button onClick={handleClearBtnClick}>Clear</button>
+    </div>
+  );
+
+  const addBtn = (
+    <div>
+      <button onClick={handleAddBtnClick}>Add</button>
+    </div>
+  );
+
+  const btnContainer = (
+    <div className="btn-container">
+      {clearBtn}
+      {addBtn}
+    </div>
+  );
+
+  const gridTable = (
+    <div className="grid-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          {gridData.length > 0 ? gridData.map((gridItem, index) => (
+            <tr key={index}>
+              <td>{gridItem.name}</td>
+              <td>{gridItem.location}</td>
+            </tr>
+          )) : null}
+        </tbody>
+      </table>
+    </div>
+  );
+
+
+  return (
+    <>
+      <div className="view-container">
+        {nameInputField}
+        {nameErrorDisplay}
+        {locationInputField}
+        {btnContainer}
+        {gridTable}
+      </div>
+    </>
   );
 }
 
