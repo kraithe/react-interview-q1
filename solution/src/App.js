@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import { getLocations, isNameValid } from './mock-api/apis';
 
 // Treating "App" as the component since it's the only component, and already contained by index.js
-// Single pages can be much larger than this, but I'd modularize any reusable functionality needed by related pages
+// Single pages can be much larger than this, but I'd modularize any reusable functionality needed by related pages (ex. grids)
 
 function App() {
 
@@ -12,6 +12,8 @@ function App() {
   const [locationOptions, setLocationOptions] = useState([]);
   const [gridData, setGridData] = useState([]);
   const [isNameError, setIsNameError] = useState([]);
+
+  /* ------- App logic and helpers -------*/
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -30,8 +32,9 @@ function App() {
 
   const checkIsValidName = async (strName) => {
     try {
+      // mock API acts a bit oddly because of the setTimeout, but does work for 'invalid name'
       let result = await isNameValid(strName);
-      setIsNameError(result ? true : false);
+      setIsNameError(result ? false : true);
     }
     catch (err) {
       console.error(`Error validating name via mock API: ${err}`);
@@ -51,7 +54,7 @@ function App() {
     setLocation(e.target.value);
   };
 
-  // Note: Clear button functionality was not specified, so for now it clears everything
+  // Note: Clear button functionality was not specified, so for now, it clears everything
   const handleClearBtnClick = () => {
     setName('');
     setLocation(locationOptions[0] || '');
@@ -61,6 +64,7 @@ function App() {
 
   const handleAddBtnClick = (e) => {
     e.preventDefault();
+    // Doing a check against the grid names here, since IsValidName is pretty limited in its scope
     const nameAlreadyExists = gridData.some((gridItem) => gridItem.name === name);
     if (nameAlreadyExists) {
         setIsNameError(true);
@@ -71,6 +75,8 @@ function App() {
         setIsNameError(false);
     }
   };
+
+  /* ------- JSX -------*/
 
   const nameInputField = (
     <div className="name-container">
@@ -83,7 +89,7 @@ function App() {
     <div className="input-name-error">
       {isNameError ? 'this name has already been taken' : ''}
     </div>
-  )
+  );
 
   const locationInputField = (
     <div className="location-container">
@@ -138,7 +144,7 @@ function App() {
     </div>
   );
 
-
+// The prior JSX compartmentalization makes for a clean, readable component return!
   return (
     <>
       <div className="view-container">
@@ -150,6 +156,6 @@ function App() {
       </div>
     </>
   );
-}
+};
 
 export default App;
