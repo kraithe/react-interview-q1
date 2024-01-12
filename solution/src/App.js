@@ -59,7 +59,7 @@ function App() {
     setName('');
     setLocation(locationOptions[0] || '');
     setIsNameError(false);
-    setGridData([]);
+    setGridData([{}, {}, {}, {}, {}]);
   };
 
   const handleAddBtnClick = (e) => {
