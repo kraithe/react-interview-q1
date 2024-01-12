@@ -19,7 +19,6 @@ function App() {
     const fetchResults = async () => {
       let results = await getLocations();
       setLocationOptions(results);
-      console.log(`Location options: ${results}`);
       setLocation(results[0]);
     };
     try {
