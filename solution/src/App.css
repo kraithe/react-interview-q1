@@ -3,8 +3,11 @@
 }
 
 .name-container {
-  width: 100%;
+  display: flex;
   float: right;
+  justify-content: flex-end;
+  margin-right: 25%;
+  width: 100%;
 }
 
 input {
@@ -29,21 +32,26 @@ input {
 }
 
 .location-container {
-  width: 100%;
+  display: flex;
   float: right;
+  justify-content: flex-end;
+  margin-right: 25%;
   margin-bottom: 20%;
+  width: 100%;
 }
 
 .location-container label {
   display: inline-block;
+  margin-top: 50px;
   margin-right: 8px;
+  margin-left: 18px;
 }
 
 select {
   margin-top: 50px;
   margin-left: 5px;
-  width: 63%;
   height: 25px;
+  width: 63%;
   border-color: black;
   border-width: 3px;
 }
@@ -54,15 +62,17 @@ option {
 }
 
 .btn-container {
-  display:inline-flex;
+  display: flex;
+  column-gap: 20%;
+  justify-content: flex-end;
+  margin-right: 25%;
+  margin-bottom: 5%;
   margin-left: 56%;
-  margin-bottom: 20px;
   text-align: right;
-  column-gap: 20px;
 }
 
 button {
-  display: inline-block;
+  display: inline-flex;
   margin-right: 5px;
   background-color: white;
   border-color: black;
@@ -77,11 +87,11 @@ table {
 
 th {
   text-align: left;
-  background-color:silver;
+  background-color: silver;
   font-weight: 600;
 }
 
-table th + th { border-left:3px solid black; }
+table th + th { border-left: 3px solid black; }
 
 tbody tr:nth-child(odd) { background-color: #f2f2f2; }
 
@@ -89,7 +99,7 @@ td {
   height: 25px;
 }
 
-table td + td { border-left:3px solid black; }
+table td + td { border-left: 3px solid black; }
 
 .view-container {
   margin: 10% 10% 5% 10%;

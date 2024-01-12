@@ -10,8 +10,8 @@ function App() {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('');
   const [locationOptions, setLocationOptions] = useState([]);
-  const [gridData, setGridData] = useState([]);
-  const [isNameError, setIsNameError] = useState([]);
+  const [gridData, setGridData] = useState([{}, {}, {}, {}, {}]);
+  const [isNameError, setIsNameError] = useState(false);
 
   /* ------- App logic and helpers -------*/
 
@@ -69,10 +69,18 @@ function App() {
     if (nameAlreadyExists) {
         setIsNameError(true);
     } else if (name && location && !isNameError) {
+      // Handle display of empty rows for visual clarity
+      if (Object.keys(gridData[gridData.length - 1]).length === 0) {
+        let oldGridData = Array.from(gridData);
+        oldGridData.pop();
+        oldGridData.unshift({ name: name, location: location })
+        setGridData(oldGridData);
+      } else {
         setGridData([...gridData, { name: name, location: location }]);
-        setName('');
-        setLocation(locationOptions[0] || '');
-        setIsNameError(false);
+      }
+      setName('');
+      setLocation(locationOptions[0] || '');
+      setIsNameError(false);
     }
   };
 
